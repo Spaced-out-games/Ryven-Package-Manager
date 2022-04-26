@@ -1,0 +1,5 @@
+{
+    "module-packages": [
+        //list of module package names
+    ], //can also be 'all' to import all packagese
+}
