@@ -26,22 +26,28 @@ class Ryven_Nodifier:
 from torch.nn import LSTM as func #temporary
 def test(f = func):
     documentation = f.__doc__
-#Step 1: normalize case
+    #Step 1: normalize case
     documentation = documentation.lower()
-#Step 2: split lines
+    #Step 2: split lines
     documentation = documentation.split('\n')
-#Step 3: filter
+    for i in range(len(documentation)):
+        documentation[i] += "\\n" #add fake newline
+
+    #Step 3: Find sections
+    roots = []
     for index in range(len(documentation)):
         line = documentation[index]
-        #find arguments start
-        if ("args:" in line) or ("arguments:" in line) ("inputs:" in line):
-            arg_start = (index if is_undefined(arg_start) else arg_start) #condition prevents index overwrite
-        elif ("input" in line) or ("arg" in line) or ("argument" in line):
-            num_args = 1
-        #find output start
-        if ("args:" in line) or ("arguments:" in line) ("inputs:" in line):
-            arg_start = (index if is_undefined(arg_start) else arg_start) #condition prevents index overwrite
-        elif ("input" in line) or ("arg" in line) or ("argument" in line):
+        depth = line.count("\t") + line.count("    ")
+        IsColon = line.find(":\\n")!=-1#if we find a colon and fake newline, all lines below this depth are inherited
+        if IsColon:
+            line = line.replace("\t", "",line.count("\t"))#
+            line = line.replace("  ", "",line.count("  "))
+            line = line.replace("\\n", "")
+            roots.append(depth, index, line)#The name of a root along with it's line index and depth are stored for dictionary synthesis
+    
+
+            
+
         
 
 
