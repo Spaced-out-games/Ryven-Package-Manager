@@ -4,6 +4,7 @@ from string import ascii_uppercase
 import sys
 from inspect import isfunction, getargspec,getfullargspec
 from jinja2 import is_undefined
+import pprint
 
 
 '''
@@ -43,7 +44,30 @@ def test(f = func):
             line = line.replace("\t", "",line.count("\t"))#
             line = line.replace("  ", "",line.count("  "))
             line = line.replace("\\n", "")
-            roots.append(depth, index, line)#The name of a root along with it's line index and depth are stored for dictionary synthesis
+            line = line.replace(":", "")
+
+            roots.append((depth, index, line))#The name of a root along with it's line index and depth are stored for dictionary synthesis
+    #Step 4: dictionary synthesis
+    d = {}
+
+    for i in range(len(roots)):
+        root = roots[i]
+        if i  < len(roots)-1:
+            nextroot = roots[i+1]
+            lastroot = False
+        else:
+            lastroot = True
+        if not lastroot:
+            d[root[2]] = documentation[root[1]:nextroot[1]]
+        else:
+            d[root[2]] = documentation[root[1]:-1]
+        nextroot[0]>root[0]
+        print(nextroot[0]>root[0])
+    #final pass
+    pprint.pprint(d)
+
+        
+
     
 
             
