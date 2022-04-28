@@ -4,8 +4,7 @@ import time
 import re
 import types
 import sys
-class NeverEverUsedClass:# some random class that will never possibly implemented by any function, ever. Fill arguments with these.
-	pass
+
 '''
 Source: https://stackoverflow.com/questions/48567935/get-parameterarg-count-of-builtin-functions-in-python
 Edited to provide additional functionality for functions that fail due to Runtime Errors
