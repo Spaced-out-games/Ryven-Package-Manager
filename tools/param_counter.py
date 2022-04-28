@@ -1,5 +1,6 @@
 from imp import is_builtin
 import inspect
+from pprint import pprint
 import time
 import re
 import types
@@ -8,9 +9,8 @@ import sys
 '''
 Source: https://stackoverflow.com/questions/48567935/get-parameterarg-count-of-builtin-functions-in-python
 Edited to provide additional functionality for functions that fail due to Runtime Errors
-Also finds arg count for C-implemented functions by reading TypeError messages and skipping type
 '''
-def get_parameter_count(func):
+def get_parameter_count(func, request_names = True):
 	"""Count parameter of a function.
 
 	Supports Python functions (and built-in functions).
@@ -47,26 +47,42 @@ def get_parameter_count(func):
 				index = message.find("(")#find first parenthesis
 				message = message[index+1:len(message)-1]#remove everything outside parenthesis, including parenthesis
 				if message.count("(") == 0:
-					return message.count(",") + 1
+					arglines = message.split(", ")
+					args = []
+					if request_names:
+						print(arglines)
+						#return arglines
+					else:
+						return len(arglines)
 				else:
 					print("Failed to parse function " + func.__name__)
 
-				print(message)
+				#print(message)
 		except TypeError as e:
 			message = str(e)
 			found = re.match(
 				r"[\w]+\(\) takes ([0-9]{1,3}) positional argument[s]* but " +
 				str(arg_test) + " were given", message)
 			if found:
-				return int(found.group(1))
+				if request_names:
+					return (["No Name Found"],int(found.group(1)))
+				else:
+					return int(found.group(1))
 
 			if "takes no arguments" in message:
-				return 0
+				if request_names:
+					return []
+				else:
+					return 0
 			elif "takes at most" in message:
 				found = re.match(
 					r"[\w]+\(\) takes at most ([0-9]{1,3}).+", message)
 				if found:
-					return int(found.group(1))
+					print("found: ", found)
+					if request_names:
+						return (["No Name Found"],int(found.group(1)))
+					else:
+						return int(found.group(1))
 			elif "takes exactly" in message:
 				# string can contain 'takes 1' or 'takes one',
 				# depending on the Python version
@@ -86,17 +102,16 @@ def get_parameter_count(func):
 			raise TypeError("unable to determine parameter count")
 		#TypeError: square() takes 1 positional argument but 2 were given	<- too many arguments passed, use as a break statement
 		#TypeError: square(): argument 'input' (position 1) must be Tensor, not int <- Wrong argument type, skip this case
-		return -1 if argspec.varargs else len(argspec.args)
+			return -1 if argspec.varargs else len(argspec.args)
 
 
 
-def print_get_parameter_count(mod):
+def get_parameter_count_module(mod):
+	out = {}
 	for x in dir(mod):
 		e = mod.__dict__.get(x)
 		if isinstance(e, types.BuiltinFunctionType):
-			print("{}.{} takes {} argument(s)".format(mod.__name__, e.__name__, get_parameter_count(e)))
-import torch
-#t = torch.rand(size = (5,5))
-torch.square(5)
-c = print_get_parameter_count(torch)
-print(c)
+			key = "{}.{}".format(mod.__name__, e.__name__)
+			out[key] = get_parameter_count(e)
+			#print("{}.{} takes {} argument(s)".format(mod.__name__, e.__name__, get_parameter_count(e)))
+	return(out)
