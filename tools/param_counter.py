@@ -99,7 +99,9 @@ def get_parameter_count(func, request_names = True):
 			else:
 				argspec = inspect.getargspec(func)
 		except:
-			raise TypeError("unable to determine parameter count")
+			#print("type; "+str(type(func)))
+			return -2
+			#raise TypeError("unable to determine parameter count")
 		#TypeError: square() takes 1 positional argument but 2 were given	<- too many arguments passed, use as a break statement
 		#TypeError: square(): argument 'input' (position 1) must be Tensor, not int <- Wrong argument type, skip this case
 			return -1 if argspec.varargs else len(argspec.args)
