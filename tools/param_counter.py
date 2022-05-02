@@ -89,22 +89,24 @@ def get_parameter_count(func, request_names = True):
 				found = re.match(
 					r"[\w]+\(\) takes exactly ([0-9]{1,3}|[\w]+).+", message)
 				if found:
-					return 1 if found.group(1) == "one" \
+					r = 1 if found.group(1) == "one" \
 							else int(found.group(1))
-		return -1  # *args
+					return (["No Name Found"], r) if request_names else r
+						
+		return (["No Name Found"], -1) if request_names else -1 # *args
 	else:
 		try:
 			if (sys.version_info > (3, 0)):
 				argspec = inspect.getfullargspec(func)
 			else:
 				argspec = inspect.getargspec(func)
-		except:
+		except:(["No Name Found"], -1)
 			#print("type; "+str(type(func)))
-			return -2
+			return (["No Name Found"],-2) if request_names else -2
 			#raise TypeError("unable to determine parameter count")
 		#TypeError: square() takes 1 positional argument but 2 were given	<- too many arguments passed, use as a break statement
 		#TypeError: square(): argument 'input' (position 1) must be Tensor, not int <- Wrong argument type, skip this case
-			return -1 if argspec.varargs else len(argspec.args)
+			#return -1 if argspec.varargs else len(argspec.args)
 
 
 

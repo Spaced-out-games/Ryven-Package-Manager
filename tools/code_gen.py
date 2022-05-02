@@ -45,25 +45,20 @@ class Ryven_Nodifier:
         #    nodename = nodename + nodename[i].capitalize()
         node_name = nodename
         #name = "".format(mod.__name__, e.__name__)
-        try:
-            #try to get arg names
-            sig = getfullargspec(obj)
-            args = sig.args
-            warning = ""
-        except Exception as e:
-            #if it doesn't work, just omit
-            warning = f'''\n
+        warning = f'''\n
 """
 WARNING: Node {node_name} was generated using fallback option. May contain bugs
 """
 '''
-        argcnt = get_parameter_count(obj)
-        args = []
-        if argcnt == None:#placeholder
-            argcnt = 0
+        gpc = get_parameter_count(obj)
+        print(gpc)
+        if ['No Name Found'] in gpc:
+            argcnt = gpc[1]
+            args = [''] * argcnt
+        else:
+            args = gpc[0]
         #for i in range(argcnt):
         #    args.append(chr(i + 97))#Name arguments as a,b,c...z
-        args = [''] * argcnt#Unnamed arguments
         inputs = '\n'.join([f"NodeInputBP('{param_name}')," for param_name in args])
         m_name = self.get_owner_name(obj)#module name
         node_def = f"""
@@ -87,9 +82,12 @@ class {node_name}(Node):
 """
 
         return node_def
-    def nodify_module(self, module):
+    def nodify_module(self, module, override_mname = False):
         code = ""
-        mname = module.__name__
+        if override_mname != False:
+            mname = override_mname
+        else:
+            mname = module.__name__
         d = dir(module)
         for c in d:
             func = getattr(module, c)
@@ -107,6 +105,6 @@ class {node_name}(Node):
 
 noder = Ryven_Nodifier()
 import inspect
-nodecode = noder.nodify_module(inspect)
+nodecode = noder.nodify_module(inspect.sys, override_mname="inspect.sys")
 print(nodecode)
 #print(get_parameter_count(str))
