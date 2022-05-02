@@ -1,7 +1,7 @@
 from typing import Callable
 from webbrowser import get
 from param_counter import get_parameter_count
-from inspect import getfullargspec,getmodule, getmodulename
+import inspect#getfullargspec,getmodule, getmodulename
 '''
 DESCRIPTION
 This file can help generate simple nodes, namely those that do not need a visual representation or are Python - implemented functions.
@@ -50,15 +50,7 @@ class Ryven_Nodifier:
 WARNING: Node {node_name} was generated using fallback option. May contain bugs
 """
 '''
-        gpc = get_parameter_count(obj)
-        print(gpc)
-        if ['No Name Found'] in gpc:
-            argcnt = gpc[1]
-            args = [''] * argcnt
-        else:
-            args = gpc[0]
-        #for i in range(argcnt):
-        #    args.append(chr(i + 97))#Name arguments as a,b,c...z
+        #args = get_parameter_count(func)
         inputs = '\n'.join([f"NodeInputBP('{param_name}')," for param_name in args])
         m_name = self.get_owner_name(obj)#module name
         node_def = f"""
@@ -102,9 +94,18 @@ class {node_name}(Node):
             func_code = self.nodify(func, node_name)
             code += func_code
         return code
-
+'''
 noder = Ryven_Nodifier()
 import inspect
 nodecode = noder.nodify_module(inspect.sys, override_mname="inspect.sys")
 print(nodecode)
-#print(get_parameter_count(str))
+'''
+d = dir(inspect.sys)
+inspect.sys.version
+for i in d:
+    print(i.__name__)
+    try:
+        c = get_parameter_count(i)
+    except Exception as e:
+        print("\n"*3)
+        print(e)
