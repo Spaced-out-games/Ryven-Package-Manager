@@ -1,6 +1,4 @@
-from typing import Callable
-from webbrowser import get
-
+import pprint
 import torch
 from param_counter import get_parameter_count
 import inspect#getfullargspec,getmodule, getmodulename
@@ -27,12 +25,24 @@ class {node_name}(Node):
             ', '.join([f'self.input({i})' for i in range(len(args))]) 
                                         }))
 """
-class Ryven_Nodifier:
-    def __init__(self):
-        pass
-    def nodify(module):
-        pass
-#print(type(torch.nn))
-inspect.getclasstree()
-print(inspect.ismodule(torch.nn))
-#print(type(module))
+def module_recursive_dict(object,attrlist = [],depth = 0, parent = {}):
+    #if inspect.ismodule(object):
+    out = []
+    d = dir(object)
+
+    for i in d:
+
+        attribute = getattr(object, i)
+        if inspect.ismodule(attribute) and (attrlist.count(i) <= 2 or depth == 0):
+            if i not in attrlist:
+                attrlist.append(i)
+                child = module_recursive_dict(attribute, attrlist, depth + 1, out)
+                out.append({i: child})
+        if not inspect.ismodule(attribute):
+            attrlist.append(i)
+            out.append(i)
+
+    return out
+import torch
+mrc = module_recursive_dict(inspect)
+pprint.pprint(mrc)
