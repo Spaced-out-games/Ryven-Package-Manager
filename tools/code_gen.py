@@ -1,4 +1,5 @@
 import pprint
+from numpy import isin
 import torch
 from param_counter import get_parameter_count
 import inspect#getfullargspec,getmodule, getmodulename
@@ -25,24 +26,22 @@ class {node_name}(Node):
             ', '.join([f'self.input({i})' for i in range(len(args))]) 
                                         }))
 """
-def module_recursive_dict(object,attrlist = [],depth = 0, parent = {}):
+def module_recursive_dict(object, depth = 0, path = [], master = {}):
     #if inspect.ismodule(object):
     out = []
-    d = dir(object)
+    if depth == 0:
+        master = object
+    attrs = dir(object)
 
-    for i in d:
-
-        attribute = getattr(object, i)
-        if inspect.ismodule(attribute) and (attrlist.count(i) <= 2 or depth == 0):
-            if i not in attrlist:
-                attrlist.append(i)
-                child = module_recursive_dict(attribute, attrlist, depth + 1, out)
-                out.append({i: child})
-        if not inspect.ismodule(attribute):
-            attrlist.append(i)
-            out.append(i)
-
+    for attr in attrs:#scan thru all attrs
+        a = getattr(object, attr)
+        if inspect.ismodule(a) and path.count(attr) <=1: #if it is a module, recursively iterate through children
+            path.append(attr)
+            out.append({attr: module_recursive_dict(a, depth + 1, path, master)})
+            #print(path)
+        elif not inspect.ismodule(a) and path.count(attr) <=1:
+            out.append(attr)
     return out
 import torch
-mrc = module_recursive_dict(inspect)
-pprint.pprint(mrc)
+
+print(vars(torch))
