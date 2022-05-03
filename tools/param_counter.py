@@ -1,9 +1,17 @@
+from ast import keyword
+from curses import keyname
 import inspect
 import time
 import re
 import types
 import sys
-
+def param_dict(args = [], kwargs = False, varargs = False, error = None):
+    return{
+        "args": args,
+        "HasKwargs": kwargs,
+        "HasVarargs": varargs,
+        "error": error
+    }
 
 def get_parameter_count(func): 
     """Count parameter of a function.
@@ -28,6 +36,31 @@ def get_parameter_count(func):
     # approach. If it's an ordinary Python function we
     # fallback by using the the built-in extraction
     # functions (see else case), otherwise
+    '''try:
+        print("attempting python fetch")
+        if (sys.version_info > (3, 0)):
+            argspec = inspect.getfullargspec(func)
+        else:
+            argspec = inspect.getargspec(func)
+    except:
+        raise TypeError("unable to determine parameter count")# inp = str
+    #No exception, argspec works
+    return param_dict() if argspec.varargs else param_dict(args = argspec.args)'''
+    try:
+        argspec = inspect.getargspec(func)
+        v = argspec.varargs
+        k = argspec.keywords
+        if v is not None:
+            v = True if len(v)>0 else False
+        if k is not None:
+            k = True if len(k)>0 else False
+
+        return param_dict(argspec.args,varargs = v, kwargs=k)
+    except Exception as e:
+        if str(e) == "unsupported callable":
+            return param_dict(error = "uncallable")
+    if not callable(func):
+        return param_dict(error = "uncallable")
     if isinstance(func, types.BuiltinFunctionType):
         try:
             arg_test = 999
@@ -39,34 +72,27 @@ def get_parameter_count(func):
                 r"[\w]+\(\) takes ([0-9]{1,3}) positional argument[s]* but " +
                 str(arg_test) + " were given", message)
             if found:
-                return int(found.group(1))
+                r = [None] * int(found.group(1))
+                return param_dict(args = r)
 
             if "takes no arguments" in message:
-                return 0
+                return param_dict()
             elif "takes at most" in message:
                 found = re.match(
                     r"[\w]+\(\) takes at most ([0-9]{1,3}).+", message)
                 if found:
-                    return int(found.group(1))
+                    r = [None] * int(found.group(1))
+                    return param_dict(args = r)
             elif "takes exactly" in message:
                 # string can contain 'takes 1' or 'takes one',
                 # depending on the Python version
                 found = re.match(
                     r"[\w]+\(\) takes exactly ([0-9]{1,3}|[\w]+).+", message)
                 if found:
-                    return 1 if found.group(1) == "one" \
-                            else int(found.group(1))
-        return -1  # *args
-    else:
-        try:
-            if (sys.version_info > (3, 0)):
-                argspec = inspect.getfullargspec(func)
-            else:
-                argspec = inspect.getargspec(func)
-        except:
-            raise TypeError("unable to determine parameter count")# inp = str
-
-        return [] if argspec.varargs else argspec.args
+                    r = [''] if found.group(1) == "one" else [''] * int(found.group(1))
+                    return param_dict(args = r)
+        return param_dict(varargs = True)  # *args
+    raise ValueError("Could not find arguments for function "+ func.__name__)
 
 
 

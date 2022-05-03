@@ -1,7 +1,10 @@
 from typing import Callable
 from webbrowser import get
+
+import torch
 from param_counter import get_parameter_count
 import inspect#getfullargspec,getmodule, getmodulename
+import cmath
 '''
 DESCRIPTION
 This file can help generate simple nodes, namely those that do not need a visual representation or are Python - implemented functions.
@@ -25,87 +28,11 @@ class {node_name}(Node):
                                         }))
 """
 class Ryven_Nodifier:
-    '''
-    Mostly a function module. No need for instantiation
-    '''
-    def get_owner_name(self, obj):
-        return type(obj).__module__#Doesnt work on methods and functions
-    def nodify(self, obj, nodename: str, color = "#ffffff"):
-
-        '''
-        Description:
-            'Nodifies' a function.
-        Args:
-            obj (function): a function to convert to a Ryven node, ie. torch.tensor
-            nodename(str): Same as obj, just in quotations, ie. 'torch.tensor'
-            color: Color of this node. For color coding by module or output data type
-        '''
-        t = ""
-        #for i in range(len(nodename)):
-        #    nodename = nodename + nodename[i].capitalize()
-        node_name = nodename
-        #name = "".format(mod.__name__, e.__name__)
-        warning = f'''\n
-"""
-WARNING: Node {node_name} was generated using fallback option. May contain bugs
-"""
-'''
-        #args = get_parameter_count(func)
-        inputs = '\n'.join([f"NodeInputBP('{param_name}')," for param_name in args])
-        m_name = self.get_owner_name(obj)#module name
-        node_def = f"""
-{warning}
-class {node_name}(Node):
-    \"\"\"{obj.__doc__}\"\"\"
-
-    title = '{node_name}'
-    init_inputs = [
-        {inputs}
-    ]
-    init_outputs = [
-        NodeOutputBP(),
-    ]
-    color = '{color}'
-
-    def update_event(self, inp=-1):
-        self.set_output_val(0, {node_name}({
-            ', '.join([f'self.input({i})' for i in range(len(args))]) 
-                                        }))
-"""
-
-        return node_def
-    def nodify_module(self, module, override_mname = False):
-        code = ""
-        if override_mname != False:
-            mname = override_mname
-        else:
-            mname = module.__name__
-        d = dir(module)
-        for c in d:
-            func = getattr(module, c)
-            #print(func)
-            if hasattr(func, "__name__"):
-                node_name = mname.capitalize() + "_" + func.__name__.capitalize()+"Node"
-            elif func is str:
-                node_name = mname.capitalize() + "_" + func + "Node"
-            elif func is not str:
-                node_name = mname.capitalize() + "_" + str(func) + "Node"
-                
-            func_code = self.nodify(func, node_name)
-            code += func_code
-        return code
-'''
-noder = Ryven_Nodifier()
-import inspect
-nodecode = noder.nodify_module(inspect.sys, override_mname="inspect.sys")
-print(nodecode)
-'''
-d = dir(inspect.sys)
-inspect.sys.version
-for i in d:
-    print(i.__name__)
-    try:
-        c = get_parameter_count(i)
-    except Exception as e:
-        print("\n"*3)
-        print(e)
+    def __init__(self):
+        pass
+    def nodify(module):
+        pass
+#print(type(torch.nn))
+inspect.getclasstree()
+print(inspect.ismodule(torch.nn))
+#print(type(module))

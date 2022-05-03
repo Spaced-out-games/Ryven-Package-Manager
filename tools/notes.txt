@@ -1,0 +1,10 @@
+Needs to be tried
+abs
+torch.tensor
+datatypes
+any Python-implemented function
+
+>=3.0:
+inspect.getfullargspec(func)
+<3.0:
+inspect.getargspec(func)
