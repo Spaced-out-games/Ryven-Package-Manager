@@ -12,7 +12,7 @@ This package manager includes a Python script that will automatically import sev
     │ │ ├─ widgets.py
     package-loader.py
     settings.json
-Instead of importing several libraries manually, simply run `package-loader.py` to import packages such as `math_module` directly into Ryven. Use`settings.json` to select which modules to import, and also whether or not to import them all in unison, or one by one.
+Instead of importing several libraries manually, simply run `package-loader.py` to import packages such as `math_module` directly into Ryven. Use`settings.jsonc` to select which modules to import, and also whether or not to import them all in unison, or one by one.
 
 Even if you don't feel it's necessary to use `package-loader.py`, several modules like the the built-in library `math` are available so there is no need to port the packages over yourself.
 
