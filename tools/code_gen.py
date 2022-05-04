@@ -1,24 +1,36 @@
-from inspect import ismodule
+import pprint as pp
 import torch
+from param_counter import get_parameter_count
+import inspect#getfullargspec,getmodule, getmodulename
+import cmath
+
+def mrd(obj, depth = 0, path = []):
+    #if inspect.ismodule(object):
+    out = []
+    #path doubles as a blacklist
+    attributes = dir(obj)
+    for i in attributes:
+        if "__" in i:
+            attributes.pop(attributes.index(i))
+        else:
+            continue
 
 
 
-def step(obj, path = []):
-	path = path.copy()
-	attrs = [getattr(obj, attr) for attr in dir(obj)]
-	focus = attrs[0]
-	str(type(focus))
-	if str(type(focus)) not in path:
-		path.append(str(type(obj)))
-		return step(focus, path)
-	return[]
 
-'''
-t = step(torch)
-print(*t)
+    for attr_name in attributes:#method name from list of them
+        try:
+            attr = getattr(obj, attr_name)#Get the actual attribute
+        except:
+            continue
+        if attr_name not in path:
+            path.append(attr_name)
+            out.append(
+                {attr_name: mrd(attr, depth + 1, path)}
+            )
+        else:
+            out.append(str(attr_name))
+    return out
 
-t = step(*t)
-print(*t)
-'''
-out = step(torch.nn)
-print(out)
+m = mrd(torch)
+
