@@ -100,7 +100,7 @@ def attributes_without_builtins(o):
     return d
 def nodify_module(module, color):
     code = ""
-    m_name = module.__package__
+    m_name = ""#module.__package__
     attrs = []
     d = attributes_without_builtins(module)
     for i in d:
@@ -123,8 +123,8 @@ export_nodes(*{m_name}_nodes)
 
 import torch
 
-code = nodify_module(torch, "#001199")
-f = open("torch_ryven.py","w").write(code)
+code = node_from_function("abs","abs",abs,"")
+print(code)
 
     
         

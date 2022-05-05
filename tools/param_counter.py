@@ -17,7 +17,7 @@ def param_dict(args = [], kwargs = False, varargs = False, error = None):
         "error": error
     }
 
-def get_parameter_count(func): 
+def get_params(func): 
     """Count parameter of a function.
 
     Supports Python functions (and built-in functions).
@@ -40,16 +40,6 @@ def get_parameter_count(func):
     # approach. If it's an ordinary Python function we
     # fallback by using the the built-in extraction
     # functions (see else case), otherwise
-    '''try:
-        print("attempting python fetch")
-        if (sys.version_info > (3, 0)):
-            argspec = inspect.getfullargspec(func)
-        else:
-            argspec = inspect.getargspec(func)
-    except:
-        raise TypeError("unable to determine parameter count")# inp = str
-    #No exception, argspec works
-    return param_dict() if argspec.varargs else param_dict(args = argspec.args)'''
     try:
         argspec = inspect.getargspec(func)
         v = argspec.varargs
@@ -62,7 +52,7 @@ def get_parameter_count(func):
         return param_dict(argspec.args,varargs = v, kwargs=k)
     except Exception as e:
         if str(e) == "unsupported callable":
-            return param_dict(error = "uncallable")
+            return param_dict(error = "unsupported callable")
     if not callable(func):
         return param_dict(error = "uncallable")
     if isinstance(func, types.BuiltinFunctionType):
@@ -77,16 +67,16 @@ def get_parameter_count(func):
                 str(arg_test) + " were given", message)
             if found:
                 r = [None] * int(found.group(1))
-                return param_dict(args = r)
+                return param_dict(args = r, error = 'No Names')
 
             if "takes no arguments" in message:
-                return param_dict()
+                return param_dict(error = "No Arguments")
             elif "takes at most" in message:
                 found = re.match(
                     r"[\w]+\(\) takes at most ([0-9]{1,3}).+", message)
                 if found:
                     r = [None] * int(found.group(1))
-                    return param_dict(args = r)
+                    return param_dict(args = r, error = "No Names")
             elif "takes exactly" in message:
                 # string can contain 'takes 1' or 'takes one',
                 # depending on the Python version
@@ -94,9 +84,11 @@ def get_parameter_count(func):
                     r"[\w]+\(\) takes exactly ([0-9]{1,3}|[\w]+).+", message)
                 if found:
                     r = [''] if found.group(1) == "one" else [''] * int(found.group(1))
-                    return param_dict(args = r)
+                    return param_dict(args = r, error = 'No Names')
         return param_dict(varargs = True)  # *args
-    raise ValueError("Could not find arguments for function "+ func.__name__)
-
-
-
+    return param_dict(error = "Could not find arguments")
+    #raise ValueError("Could not find arguments for function "+ func.__name__)
+import torch.nn
+r = repr(torch.nn.LSTM).replace("<class '", "")
+r = r.replace("'>","") if r.endswith("'>") else r
+print(r)
