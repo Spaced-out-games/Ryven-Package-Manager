@@ -66,95 +66,41 @@ class Ryven_Nodifier:
             else:
                 out.append(str(attr_name))
         return out
-    def nodify(self, func, node_name = None, color = "#aabbcc", m_name = ""):
-        #get node name, if not provided
-        if node_name == None:
-            try:
-                node_name = func.__name__
-            except AttributeError:
-                try:
-                    node_name = func.__qualname__
-                except AttributeError as e:
-                    raise AttributeError(e)
-        #Initialize variables
-        params = get_params(func)
-        errcode = params['error']
-        nameless = False
-        message = ""
-        arg_cnt = None
-        Uncall = False
+    def nodify(self, func, node_name: str = "", color: str = "#ffffff"):
+        """Creates A Ryven Node class of a function
 
-
-
-        if errcode == None:#Errorless
-            param_names = params['args']#Set param names to the parameters
-        elif errcode == "unsupported callable":#Callable is unsupported, raise an error
-            raise ValueError(f"{func.__name__} is not a supported callable.")
-        elif errcode == "uncallable":#object is not callable; may just be a normal attribute
-            Uncall = True#so flag it
-            param_names = []#and have no parameters
-        elif errcode == "No Names":#object has no named arguments
-            nameless = True#so flag it
-            param_names = None#
-            arg_cnt = len(params["args"])
-        elif errcode == "No Arguments":
-            param_names = []
-        else:
-            pass
-        arg_cnt = len(param_names) if arg_cnt == None else None
-
-        if nameless:
-            inputs = "NodeInputBP()\n" * arg_cnt
-        else:
-            if param_names != []:
-                inputs = ["NodeInputBP(label = '{i}')\n" for i in param_names]
-            else:
-                inputs = []
-        call_name = repr(func)
-
-        if Uncall:
-            ov = f"""
-        self.set_output_val(0, {self._canon_name(func)}"""
-        else:
-
-            ov = f"""
-        self.set_output_val(0, {self._canon_name(func)}("""
-
-
-
-
-        warning = f'''\n
-"""
-WARNING: {message}
-"""
-'''
-
-
-
-
-        if errcode == None:#reset
-            warning = ""
+        Args:
+            func(callable): The `callable` that is to be ported to Ryven
+            node_name(str): The name of the newly created class. Defaults to "". If no name is passed, a fetch will be attempted.
+            color(str): hex color code for the color the node is in Ryven
+            m_name(str): the name of the module this callable is inherited by.
+            
+            `m_name` needs to be the same as the module's `import` name. For example, if you `import numpy as np`,`m_name` should be `np`
+        Returns:
+            (str): A string containing the code, that when ran creates a Ryven node that has the same functionality as `func`
+        """
         
-        
+        #Psuedo - code
+        #uncallable:
+        #   init_inputs = []
+        #   @update_event:
+        #       self.set_output_value(0, _canon_name)
 
 
+        #No names:
+        #   init_inputs = NodeInputBP() * arg_cnt
+        #   @update_event:
+        #       self.set_output_value(0, _canon_name(self.input(0), self.input(1)...(self.input(n))))
+
+        #No arguments:
+        #   init_inputs = []
+        #   @update_event:
+        #       self.set_output_value(0, _canon_name())
+
+        #No error:
+        #   init_inputs = NodeInputBP(label = 'argname') for each argument, in list
+        #   @update_event:
+        #       self.set_output_value(0, _canon_name(self.input(0), self.input(1)...(self.input(n))))
 
 
-        node_def = f"""
-{warning}
-class {node_name}(Node):
-    \"\"\"{func.__doc__}\"\"\"
-
-    title = '{func.__name__}'
-    init_inputs = [
-        {inputs}
-    ]
-    init_outputs = [
-        NodeOutputBP(),
-    ]
-    color = '{color}'
-
-    def update_event(self, inp=-1):
-        {ov}
-"""
 
