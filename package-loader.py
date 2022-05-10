@@ -1,19 +1,13 @@
 '''
 this file automatically imports packages inside the packages folder. Use settings.json to configure
 '''
-'''
-import os
- 
-rootdir = '.../packages'
-for it in os.scandir(rootdir):
-    if it.is_dir():
-        print(it.path)
-        '''
+import os, sys, importlib.util
 from pathlib import Path
-import os
-
+importlib.util.module_from_spec()
+"""
+"""
 def get_modules():
-    '''Gets the paths of all'''
+    '''Gets the paths of all module directories'''
     path = str(Path(__file__).parent) + "/packages/"
     paths = []
     for it in os.scandir(path):
