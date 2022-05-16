@@ -1,88 +1,51 @@
-#import pprint as pp
-#from reprlib import recursive_repr
-#import torch
+
 from param_counter import get_params, param_dict
-from inspect import getdoc, cleandoc
-MODULE = None
+from inspect import getdoc, cleandoc, ismodule, ismethod,isclass, getmembers
+import pprint as pp
+builtin_methods = []
+def dir_with_members(obj):
+    d = dir(obj)
+    gm = getmembers(obj)
+    for i in d:
+        if i in gm:
+            gm.pop(gm.index(i))
+    return d + gm
+
+        
+def recursive_dir_list(obj, depth = 0, path = []):
+    '''
+    Converts a module and its attributes/members/methods into a recursive dictionary
+    Arguments:
+        obj: any module
+        depth: Do NOT touch, it is used for recursion.
+        path: Do NOT touch, it is used for recursion
+    Returns: a list of attributes. Dictionary items are sub-modules and sub-classes inherited by `obj`
+    '''
+    out = []
+    attributes = dir_with_members(obj)
+    for i in attributes:
+        try:#Try to get the attribute
+            attr = getattr(obj, i)
+            if (ismodule(attr) or isclass(attr)) and (i not in path) and ("__" not in i):
+                path.append(i)
+                out.append(recursive_dir_list(attr, depth+1, path))
+            elif not (ismodule(attr) or isclass(attr)):
+                out.append(i)
+            else:
+                pass
+        except Exception:
+            pass
+        d = {}
+        l = []
+    for i in range(len(out)):
+        if isinstance(out[i], dict):
+            pass
+        elif isinstance(out[i], dict):
+            pass
+    return out
 class Ryven_Nodifier:
     def __init__(self):
         pass
-    def _canon_name(self, obj):
-        r = repr(obj).replace("<class '", "") 
-        r = r.replace("'>","") if r.endswith("'>") else r
-        #print(r)
-    def walk_dict(self, d, depth = 0, path = []):
-        prep = '.'.join(path)
-        print(prep)
-        for k in d:
-            v = d[k]
-            if isinstance(v, dict):
-                path.append(v)
-                return self.walk_dict(v, depth + 1)
-            elif isinstance(v, list):
-                d = lambda x, path: path.copy().append(x)
-                out = []
-                for i in v:
-                    out.append(d(i, path))
-                return out
-            else:
-                return path
-
-    def filtered_dir(self, obj):
-        '''
-        Filter the contents of dir(obj)
-        Removes builtins like __init__ and __call__, and removes non-callable attributes or attributes that cannot be retrieved via getattr.
-        May add ability to conditionally filter these elements
-        '''
-        d = dir(obj)
-        for i in range(len(d)):
-            if d[i].count("__") == 2:
-                d[i] = ""#"" instead of pop() to prevent index out of range errors;No method or attribute can be "" and will later be popped
-            elif d[i][0] == "_" or d[i][-1] == "_":#not replaced
-                d[i] = ""
-            else:
-                try: #to get attribute
-                    g = getattr(obj, d[i])
-                    #if isinstance(g, [int, float, ])
-                    if not callable(g):
-                        d[i] = ""
-
-
-
-
-
-                except NotImplementedError:
-                    d[i] = ""#remove this element, as it cannot be retreived via getattr
-                except AttributeError:
-                    d[i] = ""#remove this element, as it cannot be retreived via getattr
-                except RuntimeError:
-                    d[i] = ""#remove this element, as it cannot be retreived via getattr
-                except Exception as e:
-                    raise(e.args[0])
-        while d.count(""):
-            d.remove("")
-        return sorted(d)
-    def _mrd(self, obj, depth = 0, path = []):
-        if depth > 5:
-            return []
-        out = []
-        #path doubles as a blacklist
-        attributes = self.filtered_dir(obj)
-        for attr_name in attributes:#method name from list of them
-            attr = getattr(obj, attr_name)#Get the actual attribute
-
-            if attr_name not in path:
-                path.append(attr_name)
-                m = self._mrd(attr, depth + 1, path)
-                if m != []:
-                    out.append(
-                        {attr_name: m}
-                    )
-                else:
-                    out.append(attr_name)
-            else:
-                out.append(str(attr_name))
-        return out
     def nodify(self, func, node_name: str = "", color: str = "#ffffff"):
         try:
             documentation = cleandoc(getdoc(func))
@@ -109,7 +72,7 @@ class Ryven_Nodifier:
         argcnt = len(args)
         init_inputs, init_outputs = ("","")
         cname = func.__name__
-        name = node_name if node_name != "" else self._canon_name(func)
+        name = node_name if node_name != "" else ""#self._canon_name(func)
         sov = f"\t\tself.set_output_value({cname}(*self.inputs))"
         #Psuedo - code
         #uncallable:
@@ -159,6 +122,8 @@ class Ryven_Nodifier:
             warning = ""
         else:
             pass#raise Exception(f"Unsupported error code. This should never happen. Error code: {errcode}")
+        if init_inputs=="":
+            print(node_name, errcode)
         return f'''
 {warning}
 class {node_name}(Node):
@@ -172,24 +137,59 @@ class {node_name}(Node):
         {sov}
 '''
     def nodify_module(self, module, color: str = "#ffffff"):
-        d = self._mrd(module)
-        t = self.walk_dict(d)
-        print(t)
-
-import math as m
-
+        pass
+c = "#e19d1e"#torch module color code
+import torch
+color = "#D06B34"
+essentials = [
+    "torch.tensor",
+    "torch.Tensor.item",
+    #tensor slice operations, ie [0:-1], [0][:]
+    "torch.FloatTensor",
+    "torch.Tensor.size",
+    "torch.Tensor.ndimension",
+    "torch.Tensor.view",
+    "torch.Tensor.tolist",
+    "torch.Tensor.numpy",
+    "torch.as_tensor",
+    "torch.autograd.backward",
+    "torch.autograd.grad",
+    "torch.device",
+    "torch.detach",
+    "torch.empty",
+    "torch.enable_grad",
+    "torch.is_grad_enabled",
+    #torch.fft
+    "torch.from_numpy",
+    "torch.from_file",
+    "torch.gru",
+    "torch.gru_cell",
+    "torch.is_grad_enabled",
+    "torch.layer_norm",
+    "torch.lstm",
+    "torch.lstm_cell",
+    "torch.empty_like",
+    "torch.zeros_like",
+    "torch.ones_like",
+    "torch.optim.Adam",
+    "torch.randn",
+    "torch.randn_like",
+    "torch.randint",
+    "torch.randint_like",
+    "torch.reshape"
+    #pd.DataFrame(x.numpy()) #x Tensor --> pandas dataframe
+]
+'''
 rn = Ryven_Nodifier()
-l = rn.filtered_dir(m)
 code = ""
-for i in l:
-    code += rn.nodify(getattr(m, i), node_name = i+"_Node", color = "#aa2352")
+for i in essentials:
+    f = eval(i)
+    n = i.split(".")[-1].replace("_", " ")
+    code +=rn.nodify(f,n,color)
 
-code = f"""
-from ryven.NENV import *
-from math import *
-{code}
-math_nodes = [{", ".join(l)}]
-export_nodes(*math_nodes)
-"""
-with open("math_nodes.py","w") as o:
+with open("test.py","w") as o:
     o.write(code)
+'''
+p = get_params(torch.tensor)
+torch.tensor()
+print(p)
