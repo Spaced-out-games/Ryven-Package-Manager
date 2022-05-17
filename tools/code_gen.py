@@ -1,5 +1,5 @@
 
-from param_counter import get_params, param_dict
+from param_counter import get_params
 from inspect import getdoc, cleandoc, ismodule, ismethod,isclass, getmembers
 import pprint as pp
 builtin_methods = []
@@ -191,5 +191,4 @@ with open("test.py","w") as o:
     o.write(code)
 '''
 p = get_params(torch.tensor)
-torch.tensor()
 print(p)
