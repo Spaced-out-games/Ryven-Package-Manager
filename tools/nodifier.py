@@ -26,6 +26,6 @@ class Ryven_Nodifier:
 
 		Args:
 			func (callable): Any callable, whether it be a method or function
-			node_name (_type_): _description_
-			color (_type_): _description_
+			node_name (str): The title of the node in Ryven.
+			color (str): Node Color
 		"""
