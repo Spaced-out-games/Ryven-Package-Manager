@@ -11,3 +11,5 @@ if system() == "Darwin":
 import ryven
 ryven.run_ryven()
 #actions
+import torch
+#print(torch.tensor([0],requires_grad=False,dtype=None,device=None))

@@ -276,7 +276,7 @@ returned :class:`ndarray` share the same underlying storage. Changes to
         		self.set_output_value(numpy(*self.inputs))
 
 
-class as tensor(Node):
+class as_tensor(Node):
     """as_tensor(data, dtype=None, device=None) -> Tensor
 
 Convert the data into a `torch.Tensor`. If the data is already a `Tensor` with the same `dtype` and `device`,
@@ -533,7 +533,7 @@ Example::
         		self.set_output_value(enable_grad(*self.inputs))
 
 
-class is grad enabled(Node):
+class is_grad_enabled(Node):
     """is_grad_enabled() -> (bool)
 
 Returns True if grad mode is currently enabled."""
@@ -546,7 +546,7 @@ Returns True if grad mode is currently enabled."""
         		self.set_output_value(is_grad_enabled(*self.inputs))
 
 
-class from numpy(Node):
+class from_numpy(Node):
     """from_numpy(ndarray) -> Tensor
 
 Creates a :class:`Tensor` from a :class:`numpy.ndarray`.
@@ -578,7 +578,7 @@ Example::
         		self.set_output_value(from_numpy(*self.inputs))
 
 
-class from file(Node):
+class from_file(Node):
     """"""
     title = 'from file'
     
@@ -600,7 +600,7 @@ class gru(Node):
         		self.set_output_value(gru(*self.inputs))
 
 
-class gru cell(Node):
+class gru_cell(Node):
     """"""
     title = 'gru cell'
     
@@ -611,7 +611,7 @@ class gru cell(Node):
         		self.set_output_value(gru_cell(*self.inputs))
 
 
-class is grad enabled(Node):
+class is_grad_enabled(Node):
     """is_grad_enabled() -> (bool)
 
 Returns True if grad mode is currently enabled."""
@@ -624,7 +624,7 @@ Returns True if grad mode is currently enabled."""
         		self.set_output_value(is_grad_enabled(*self.inputs))
 
 
-class layer norm(Node):
+class layer_norm(Node):
     """"""
     title = 'layer norm'
     
@@ -646,7 +646,7 @@ class lstm(Node):
         		self.set_output_value(lstm(*self.inputs))
 
 
-class lstm cell(Node):
+class lstm_cell(Node):
     """"""
     title = 'lstm cell'
     

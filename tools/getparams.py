@@ -116,6 +116,10 @@ test_str = ("Applies a multi-layer long short-term memory (LSTM) RNN to an input
 	"    >>> output, (hn, cn) = rnn(input, (h0, c0))")
 doc = test_str
 import torch
-
-torch.nn.LSTM
-start = r"([a-z]*: ?\n)    [a-z_]*:"
+start_regex = r"([a-z]*: ?\n)    [a-z_]*:"
+'''
+Args: 
+    input:
+'''
+param_regex = "(    ([a-z_]*): [a-z `]*)"
+print(doc)

@@ -8,3 +8,41 @@ any Python-implemented function
 inspect.getfullargspec(func)
 <3.0:
 inspect.getargspec(func)
+
+"sklearn.preprocessing"
+    "torch.tensor",
+    "torch.Tensor.item",
+    #tensor slice operations, ie [0:-1], [0][:]
+    "torch.FloatTensor",
+    "torch.Tensor.size",
+    "torch.Tensor.ndimension",
+    "torch.Tensor.view",
+    "torch.Tensor.tolist",
+    "torch.Tensor.numpy",
+    "torch.as_tensor",
+    "torch.autograd.backward",
+    "torch.autograd.grad",
+    "torch.device",
+    "torch.detach",
+    "torch.empty",
+    "torch.enable_grad",
+    "torch.is_grad_enabled",
+    #torch.fft
+    "torch.from_numpy",
+    "torch.from_file",
+    "torch.gru",
+    "torch.gru_cell",
+    "torch.is_grad_enabled",
+    "torch.layer_norm",
+    "torch.lstm",
+    "torch.lstm_cell",
+    "torch.empty_like",
+    "torch.zeros_like",
+    "torch.ones_like",
+    "torch.optim.Adam",
+    "torch.randn",
+    "torch.randn_like",
+    "torch.randint",
+    "torch.randint_like",
+    "torch.reshape"
+    #pd.DataFrame(x.numpy()) #x Tensor --> pandas dataframe

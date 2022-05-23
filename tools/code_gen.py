@@ -142,6 +142,7 @@ c = "#e19d1e"#torch module color code
 import torch
 color = "#D06B34"
 essentials = [
+    "sklearn.preprocessing"
     "torch.tensor",
     "torch.Tensor.item",
     #tensor slice operations, ie [0:-1], [0][:]

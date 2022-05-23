@@ -63,5 +63,14 @@ class Safe_Eval_Node(Node):
     def set_state(self, data: dict, version):
         self.number_param_inputs = data['num param inputs']
         self.expression_code = data['expression code'] 
-nodes = [Safe_Eval_Node]
+class TypeNode(Node):
+    '''Get the data type of the given input'''
+    title = 'type'
+    tags = []
+    init_inputs = [NodeInputBP(dtype=dtypes.Data(default=1))]
+    init_outputs = [NodeOutputBP()]
+    color ='#HEXCOL'
+    def update_event(self, inp=-1):
+        self.set_output_val(0,type(self.input(0)))
+nodes = [Safe_Eval_Node,TypeNode]
 export_nodes(*nodes)
