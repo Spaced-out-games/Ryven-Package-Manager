@@ -10,8 +10,8 @@ inspect.getfullargspec(func)
 inspect.getargspec(func)
 
 "sklearn.preprocessing"
-    "torch.tensor",
-    "torch.Tensor.item",
+    "torch.tensor",#
+    "torch.Tensor.item",#
     #tensor slice operations, ie [0:-1], [0][:]
     "torch.FloatTensor",
     "torch.Tensor.size",
