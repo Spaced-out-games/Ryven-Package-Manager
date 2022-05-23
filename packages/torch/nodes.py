@@ -1,8 +1,8 @@
 from ryven.NENV import *
 import torch#from torch import *?
-torch.Tensor.item()
 #"#D06B34"
-class Torch_tensorNode(Node):
+
+class torch_tensor_Node(Node):
 	'''
 	tensor(data, *, dtype=None, device=None, requires_grad=False, pin_memory=False) -> Tensor
 
@@ -77,8 +77,41 @@ Example::
 	color ="#D06B34"
 	def update_event(self, inp=-1):
 		self.set_output_val(0,torch.tensor(data=self.input(0),dtype=self.input(1),device = self.input(2), requires_grad=self.input(3)))
-class Torch_Tensor_Item_Node(Node):
+class torch_item_Node(Node):
     '''
+    Returns the value of this tensor as a standard Python number. This only works for tensors with one element.
     '''
-torch_nodes =[Torch_tensorNode]
+    title = "Get Tensor Item"
+    tags = ['torch','item','tensor']
+    init_inputs = [NodeInputBP(dtype=dtypes.Data(), label = "Tensor")]
+    init_outputs = [NodeOutputBP()]
+    color = "#D06B34"
+    def update_event(self, inp=-1):
+        self.set_output_val(0,torch.Tensor.item(self = self.input(0)))
+class torch_tolist_Node(Node):
+    '''Converts a tensor to a Python list'''
+    title = 'torch.Tensor -> list'
+    tags = ['tensor','list']
+    init_inputs = [NodeInputBP(dtype=dtypes.Data(default=1), label="tensor")]
+    init_outputs = [NodeOutputBP(label = 'list')]
+    color ='#D06B34'
+    def update_event(self, inp=-1):
+        self.set_output_val(0,torch.Tensor.tolist(self = self.input(0)))
+class torch_to_dtype(Node):
+    '''Converts input tensor to the datatype provided'''
+    
+    title = 'tensor to dtype'
+    tags = ['torch','tensor','dtype']
+    init_inputs = [NodeInputBP(dtype=dtypes.Data(default=1), label = 'tensor'),
+    NodeInputBP(dtype=dtypes.Data(default=1), label = 'dtype')]
+    init_outputs = [NodeOutputBP()]
+    color ='#D06B34'
+    def update_event(self, inp=-1):
+        datatypes = [{"float32":torch.float32},{"float16":torch.float16},{"float64":torch.float64},{"bfloat16":torch.bfloat16},{"complex32":torch.complex32},{"complex64":torch.complex64},{"complex128":torch.complex128},{"uint8":torch.uint8},{"int8":torch.int8},{"int16":torch.int16},{"int32":torch.int32},{"int64":torch.int64},{"bool":torch.bool},{"quint8":torch.quint8},{"quint4x2":torch.quint4x2},{"qint8":torch.qint8},{"qint32":torch.qint32}]
+        if self.input(1) in [list(i.keys())[0] for i in datatypes]:
+            i = [list(i.keys())[0] for i in datatypes].index(self.input(1))
+            self.set_output_val(0,torch.Tensor.to(self = self.input(0),dtype = datatypes[i].get(self.input(1))))
+        else:
+            self.set_output_val(0,self.input(0))
+torch_nodes =[torch_tensor_Node,torch_item_Node,torch_tolist_Node]
 export_nodes(*torch_nodes)
