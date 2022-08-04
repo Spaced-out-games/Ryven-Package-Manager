@@ -1,4 +1,7 @@
 ﻿## A simple package manager for Ryven
+# NOTICE: This project is NOT complete and has been halted in progress, however progress may be made in the future
+
+
 
 This package manager includes a Python script that will automatically import several code libraries. Each subfolder under the  `packages`folder contains all of the integration code of the associated module:
 
